@@ -1,3 +1,7 @@
+总来说中断流程是可以参考这个图
+
+<img src="./exti_process.png" style="zoom:50%;" />
+
 ①初始化IO口为输入
 
 	GPIOE_CRL &= ~(0XF << 16);
@@ -59,29 +63,31 @@
 
 ​       因为我们的按键是在PE4引脚上，4引脚对应的中断。
 
-<img src="AFIO_EXITCR2.PNG" alt="aircr" style="zoom:50%;" />
+<img src="./AFIO_EXITCR2.PNG"  style="zoom:40%;" />
 
 
 
 2. 步骤5中通过设置NIVC_ISER[?] 的使能对应通道中断号,那么 ？这个数组角标到底是多少呢？看M3的手册ISER寄存器介绍
 
-![image-20221022225539775](ISER.png)
+<img src="./ISER.png"  style="zoom:40%;" />
 
 所以根据对应终端号在这里确认 ？ 是多少(例如外部中断4 EXIT4的终端号是10，在0-31中，所以？=0)。ISER 是用来控制NVIC 中断的使能的寄存器。
 
-![image-20221022224812766](NVIC_ISER.png)
+<img src="./NVIC_ISER.png"  style="zoom:40%;" />
 
 3. 通过 SCB->AIRCR 设置中断的分组
 
-<img src="中断优先级设置3.png" alt="aircr" style="zoom:30%;" /><img src="中断优先级设置4.png" alt="aircr" style="zoom:30%;" />
+<img src="./中断优先级设置3.png"  style="zoom:30%;" /><img src="./中断优先级设置4.png" style="zoom:30%;" />
+
+
 
 看AIRCR寄存器，人家要求要写密钥，并通过 ARICR[10:8]设置分组
 
-<img src="aircr.png" alt="aircr" style="zoom:50%;" />
+<img src="./aircr.png" style="zoom:40%;" />
 
 在这个寄存器的Bit[10:8] 设置中断优先级分组
 
-![中断优先级设置2](中断优先级设置2.PNG)
+<img src="./中断优先级设置2.PNG" alt="aircr" style="zoom:30%;" />
 
 如果优先级组设置为4：
 
@@ -109,7 +115,14 @@
 
 了解了这些，再看
 
+	temp = SCB->AIRCR; // 读取先前的值
+	temp &= 0X0000F8FF;  // 清空高位，并给BIT[10：8] 置0
+	temp |= (0X05FA<<16 | (7 - group) << 8);  // 设置秘钥并设置优先级分组
+	SCB->AIRCR = temp;
+	
+	NVIC->ISER[interrupt_channel/32] |= (1<<(interrupt_channel%32)); // 使能EXIT4 中断位 interrupt_channel是中断表中的中断通道号
 	NVIC->IP[interrupt_channel] = priority << 4;  //IPn[7:4] 表示优先级：假如当前中断优先级priority =0x7 (0111,表示 抢占3，响应1)
+
 
 就简单了。
 
@@ -122,3 +135,5 @@
 [ST公司的cortex-m3内核说明](https://www.st.com/resource/en/programming_manual/cd00228163-stm32f10xxx-20xxx-21xxx-l1xxxx-cortex-m3-programming-manual-stmicroelectronics.pdf)
 
 STM32中文手册
+
+STM32英文手册
