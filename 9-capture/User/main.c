@@ -26,12 +26,11 @@ int main()
 	//init_timer3_pwd();
 	init_timer2_pwd();
   //timer3_init_input_capture();
-	printf("TIM3CH1_OVERFLOW_COUNT = %d",111);
-	timer3_init_input_capture();
+//	timer3_init_input_capture_measure_freq();
+	timer3_init_ic();
 	while(1)							
 	{
-		
-		
+		printf("TIM3CH1_measure freq = %d\r\n", IC_TIM3_CH1_GetFreq());	//IC_TIM3_CH1_GetDuty() 
 	}
 }
 
