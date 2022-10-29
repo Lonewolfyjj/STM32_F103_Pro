@@ -31,7 +31,7 @@ int fputc(int ch, FILE *f)
 }
 #endif 
 
-unsigned char USART_RX_BUFFER[USART_REC_LENGTH];
+char USART_RX_BUFFER[USART_REC_LENGTH];
 unsigned short USART_RECVICE_STA = 0;
 unsigned short R_LEN = 0;
 
@@ -76,7 +76,7 @@ void usart_send(char *s) {
 
 void USART1_IRQHandler(void) 
 {
-	unsigned char res;	
+	char res;	
 
 	if(USART_SR & (1<<5))	//接收到数据
 	{	 

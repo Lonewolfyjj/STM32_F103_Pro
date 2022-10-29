@@ -3,7 +3,7 @@
 
 #include "stdio.h"
 #define USART_REC_LENGTH  200  	//定义最大接收字节数 200
-extern unsigned char USART_RX_BUFFER[USART_REC_LENGTH]; //接收缓冲,最大USART_REC_LEN个字节.
+extern char USART_RX_BUFFER[USART_REC_LENGTH]; //接收缓冲,最大USART_REC_LEN个字节.
 
 /*
  *接收状态	

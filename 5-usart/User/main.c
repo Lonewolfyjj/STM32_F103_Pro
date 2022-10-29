@@ -6,10 +6,11 @@
 #include "typedef.h"
 #include "string.h"
 #include "usart.h"
+#include "string.h"
 
 void Rcc_init(void);
 void key_test(void);
-
+void parseCmd(void); 
 int main()
 {
 	unsigned short t; 
@@ -24,14 +25,14 @@ int main()
 	
 	while(1)							
 	{
-    
-	 if(USART_RECVICE_STA==2)
+	  if(USART_RECVICE_STA==2)
 	  {					   
 			len = R_LEN;//得到此次接收到的长度
 			printf("\r\n你发的数据为:\r\n\r\n");
+			parseCmd();
 			for(t=0;t<len;t++)
 			{
-				USART_DR=USART_RX_BUFFER[t];
+				USART_DR = USART_RX_BUFFER[t];
 				while((USART_SR&0X40)==0);//等待发送结束
 			}
 			printf("\r\n\r\n");//插入换行
@@ -48,15 +49,42 @@ int main()
 			} 
 			if(times%200==0)
 			{
-				usart_send("输入数据以回车键结束\r\n");  
-				LED_RED = ~LED_RED;
-				LED_BLUE = ~LED_BLUE;
+				usart_send("1、LED_ON  打开LED  \r\n"); 
+				usart_send("2、LED_OFF  关闭LED  \r\n");
+				usart_send("3、BEEP_ON  打开BEEP  \r\n");
+				usart_send("4、BEEP_OFF  关闭BEEP  \r\n");
+				usart_send("输入数据以回车键结束\r\n\r\n\r\n");
+				//LED_RED = ~LED_RED;
+				//LED_BLUE = ~LED_BLUE;
 			}
 			delay_ms(10); 		
 		}	
 	}
 }
 
+void parseCmd() 
+{
+	if (strcmp(USART_RX_BUFFER, "LED_ON") == 0)
+	{
+		LED_RED = 0;
+	}
+	else if (strcmp(USART_RX_BUFFER, "LED_OFF") == 0)
+	{
+		LED_RED = 1;
+	}
+	else if (strcmp(USART_RX_BUFFER, "BEEP_ON") == 0)
+	{
+		BEEP = 1;
+	} 
+	else if(strcmp(USART_RX_BUFFER, "BEEP_OFF") == 0) 
+  {
+	  BEEP = 0;
+	} 
+	else 
+  {
+	  printf("ERR COMMOND!\r\n");
+	}
+}
 
 void key_test(void) 
 {
