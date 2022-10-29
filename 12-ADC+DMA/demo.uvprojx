@@ -10,6 +10,7 @@
       <TargetName>Target 1</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
+      <pCCUsed>5060528::V5.06 update 5 (build 528)::ARMCC</pCCUsed>
       <uAC6>0</uAC6>
       <TargetOption>
         <TargetCommonOption>
@@ -335,7 +336,7 @@
               <MiscControls></MiscControls>
               <Define>USE_STDPERIPH_DRIVER,STM32F10X_HD</Define>
               <Undefine></Undefine>
-              <IncludePath>.\CMSIS;.\Lib\inc;.\Startup;.\User;.\System\delay;.\System\sys;.\Hardware\LED;.\System\reg;.\Hardware\KEY;.\Hardware\BEEP;.\System\usart;.\System\timer;.\Hardware\ADC</IncludePath>
+              <IncludePath>.\CMSIS;.\Lib\inc;.\Startup;.\User;.\System\delay;.\System\sys;.\Hardware\LED;.\System\reg;.\Hardware\KEY;.\Hardware\BEEP;.\System\usart;.\System\timer;.\Hardware\ADC;.\Hardware\DMA;.\Hardware\LCD</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -583,6 +584,16 @@
               <FileName>adc.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Hardware\ADC\adc.c</FilePath>
+            </File>
+            <File>
+              <FileName>MyDMA.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\MyDMA.c</FilePath>
+            </File>
+            <File>
+              <FileName>ILI93xx.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Hardware\LCD\ILI93xx.c</FilePath>
             </File>
           </Files>
         </Group>
