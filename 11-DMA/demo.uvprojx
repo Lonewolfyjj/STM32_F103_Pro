@@ -588,12 +588,7 @@
             <File>
               <FileName>MyDMA.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\MyDMA.c</FilePath>
-            </File>
-            <File>
-              <FileName>ILI93xx.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Hardware\LCD\ILI93xx.c</FilePath>
+              <FilePath>.\Hardware\DMA\MyDMA.c</FilePath>
             </File>
           </Files>
         </Group>

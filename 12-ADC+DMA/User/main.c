@@ -1,47 +1,24 @@
 #include "reg.h"
 #include "key.h"
 #include "delay.h"
-#include "led.h"
-#include "beep.h"
 #include "typedef.h"
 #include "string.h"
 #include "usart.h"
 #include "timer.h"
 #include "adc.h"
-#include "MyDMA.h"
-#include "lcd.h"
 
 void Rcc_init(void);
 
 int main()
-{
-  u8 data1[] = {0x01,0x02,0x03,0x04};
-  u8 data2[] = {0,0,0,0};
+{ 
 	Rcc_init();
 	delay_init();
-    usart_init(72,115200);
-	DMA_init((uint32_t)&data1,(uint32_t)&data2, sizeof(data2));
-	LCD_Init();
-	
-	POINT_COLOR=RED;
-	LCD_ShowString(30,40,90,24,24,"DMA TEST"); 
-
+  usart_init(72,115200);
+  init_adc();// ADC 初始化中加入DMA
+  printf("start.....");
 	while(1)							
 	{
-		data1[0]++;
-		data1[1]++;
-		data1[2]++;
-		data1[3]++;
-		LCD_ShowxNum(30,70,(u8)data1[0],3,24,0X80);
-		LCD_ShowxNum(80,70,(u8)data1[1],3,24,0X80);
-		LCD_ShowxNum(130,70,(u8)data1[2],3,24,0X80);
-		LCD_ShowxNum(180,70,(u8)data1[3],3,24,0X80);
-		delay_ms(1000);
-		//start_Transt();
-        LCD_ShowxNum(30,110,(u8)data2[0],3,24,0X80);
-		LCD_ShowxNum(80,110,(u8)data2[1],3,24,0X80);
-		LCD_ShowxNum(130,110,(u8)data2[2],3,24,0X80);
-		LCD_ShowxNum(180,110,(u8)data2[3],3,24,0X80);
+		printf("adc result = %d\r\n",adcRes);
 		delay_ms(1000);
 	}
 }
