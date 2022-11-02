@@ -57,10 +57,21 @@ u8 isRxNotEmpty()
 u8 SPI2_ReadWriteByte(u8 data)
 {		
   u8 result;
-	while(!isTxEmpty()); // 发送不为空执行发送
+	u16 retry;
+	while(!isTxEmpty()) 	// 发送不为空执行发送
+  {
+		retry++;
+		if(retry>=0XFFFE)
+			return 0; 	//超时退出
+	}			
 	SPI2->DR = data;
-	
-	while(!isRxNotEmpty()); // 数据接收器为空一直等待接收数据
+	retry=0;
+	while(!isRxNotEmpty()) // 数据接收器为空一直等待接收数据
+	{
+		retry++;
+		if(retry>=0XFFFE)
+			return 0; 	//超时退出
+	}
 	result = SPI2->DR;
 	
   return result;		    

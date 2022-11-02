@@ -9,6 +9,7 @@
 
 void Rcc_init(void);
 u8 readBuff[4096];
+u8 writeBuff[40]="hello world this is flash test msg!";// 最多写256字节，文档要求，再多的需要再次发起写命令
 int main()
 { 
 	u16 i;
@@ -20,12 +21,15 @@ int main()
 
 	W25Q128_Init();
   W25Q128_Sector_Erase(0);		//擦除这个扇区
-	W25Q128_Read(readBuff,0,4096);
+  W25Q128_Write(writeBuff,3,256);
+  W25Q128_Read(readBuff,0,4096);
+	
   for(i=0;i<4096;i++) {
 	  printf(" 0x%x ",readBuff[i]);
 		if(i%10==0) printf("\r\n");
 	}
-
+	
+	
 	printf("type = 0x%x\r\n", Read_Manufacturer());
 	while(1)
 	{ 
