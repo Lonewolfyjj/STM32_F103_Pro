@@ -20,7 +20,7 @@ int main()
 	
 	LED_RED = 0;
 	//delay_ms(1000);
-//	for(i=0;i<256;i++) {
+//	for(i=0;i<=255;i++) {
 //	    send_write_byte(i,i+1);
 //		  printf("write data = %d\r\n",i);
 //  		delay_ms(10);
@@ -29,7 +29,7 @@ int main()
 //		}
 //  }
 	
-	for(i=0;i<256;i++) {
+	for(i=0;i<=255;i++) {
 	  data = send_read_byte(i); 
 		printf("read data = %d\r\n",data);
 		LED_RED = data & 0x01; // 用led 指示数据读取中
