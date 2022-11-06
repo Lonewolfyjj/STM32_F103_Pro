@@ -1,0 +1,8 @@
+T39CC 000:008.150   SEGGER J-Link V7.56 Log File
+T39CC 000:008.300   DLL Compiled: Oct  7 2021 16:08:24
+T39CC 000:008.308   Logging started @ 2022-11-06 12:34
+T39CC 000:008.315 - 8.318ms
+T39CC 000:008.328 JLINK_SetWarnOutHandler(...)
+T39CC 000:008.337 - 0.012ms
+T39CC 000:008.347 JLINK_OpenEx(...)
+T39CC 000:014.285   Out of sync , resynchronizing...
