@@ -121,9 +121,7 @@ DRESULT disk_read (
 	case DEV_FLASH :
 		/* 扇区偏移2MB，外部Flash文件系统空间放在SPI Flash后面6MB空间 */
       sector+=512; 
-		  W25Q128_Read((u8 *)buff,
-	                          sector * FLASH_SECTOR_SIZE,
-	                          count * FLASH_SECTOR_SIZE);
+		  W25Q128_Read((u8 *)buff, sector * FLASH_SECTOR_SIZE, count * FLASH_SECTOR_SIZE);
     res = RES_OK;
 		return res;
 
@@ -172,9 +170,9 @@ DRESULT disk_write (
 	switch (pdrv) {
 		case DEV_FLASH :
 			
-		 /* 扇区偏移2MB，外部Flash文件系统空间放在SPI Flash后面6MB空间 */
+		    /* 扇区偏移2MB，外部Flash文件系统空间放在SPI Flash后面14MB空间 */
 				sector+=512;
-				//W25Q128_Sector_Erase(write_addr);
+				W25Q128_Sector_Erase(sector * FLASH_SECTOR_SIZE);
 				W25Q128_Write((u8 *)buff,sector * FLASH_SECTOR_SIZE,count * FLASH_SECTOR_SIZE);
 				res = RES_OK;
 			return res;
@@ -219,7 +217,7 @@ DRESULT disk_ioctl (
 
 	if (pdrv == DEV_FLASH) {
     switch (cmd) {
-        /* 扇区数量：3584*4096/1024/1024=6(MB) */
+        /* 扇区数量：3584*4096/1024/1024=14(MB) */
         case GET_SECTOR_COUNT:
           *(DWORD * )buff = 3584; // 这个值来源于前面512扇区给了文件系统表，后面的才是可以使用的空间  w25q128 4096 扇区 - 512 扇区 =	3584
         break;

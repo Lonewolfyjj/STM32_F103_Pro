@@ -21,7 +21,7 @@ void W25Q128_Init(void)
 	SPI2_Init(); //初始化SPI
 
 	result=Read_Manufacturer();//读取FLASH ID.
-	printf("W25Q128_Init 0x%x\r\n",result);
+	//printf("W25Q128_Init 0x%x\r\n",result);
 }  
 
 //读取芯片ID	 0X5217	表示芯片型号为 NM25Q128 	 
@@ -37,7 +37,7 @@ u16 Read_Manufacturer(void)
 	Temp |= SPI2_ReadWriteByte(0x00);
 	W25Q128_CS=1;				    
 
-  printf("Temp = 0x%x\r\n",Temp);	
+  //printf("Temp = 0x%x\r\n",Temp);	
 	return Temp;
 } 
 
@@ -100,7 +100,7 @@ void W25Q128_Wait()
 void W25Q128_Read(u8 *readBuffer, u32 readAddr, u32 numByteToRead)
 { 
 	u16 i;   										    
-	printf("    0x%x                \r\n", readAddr);
+	//printf("    0x%x                \r\n", readAddr);
 	W25Q128_CS=0;                            	//使能器件   
 	SPI2_ReadWriteByte(READ_DATA);         	//发送读取命令   
 	SPI2_ReadWriteByte((u8)((readAddr)>>16));  	//发送24bit地址    
@@ -159,7 +159,7 @@ void W25Q128_Write_NoCheck(u8* pBuffer,u32 WriteAddr,u16 NumByteToWrite)
 	if(NumByteToWrite<=pageremain)pageremain=NumByteToWrite;//不大于256个字节
 	while(1)
 	{	   
-		printf("write page WriteAddr = 0x%x ,pageremain = 0x%x ",WriteAddr,pageremain);
+		//printf("write page WriteAddr = 0x%x ,pageremain = 0x%x ",WriteAddr,pageremain);
 		W25Q128_Write_Page(pBuffer,WriteAddr,pageremain);
 		if(NumByteToWrite==pageremain)break;//写入结束了
 	 	else //NumByteToWrite>pageremain
@@ -195,7 +195,7 @@ void W25Q128_Write(u8* pBuffer,u32 WriteAddr,u16 NumByteToWrite)
  	if(NumByteToWrite<=secremain)secremain=NumByteToWrite;//不大于4096个字节
 	while(1) 
 	{	
-		printf("secpos = %d\r\n",secpos);
+		//printf("secpos = %d\r\n",secpos);
 		W25Q128_Read(W25QXX_BUF,secpos*4096,4096);//读出整个扇区的内容
 		for(i=0;i<secremain;i++)//校验数据
 		{
