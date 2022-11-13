@@ -7,8 +7,11 @@
 #include "led.h"
 #include "w25q128.h"
 #include "ff.h"
+
 void Rcc_init(void);
+
 static FRESULT file_check(void);
+FILINFO fno;
 FATFS fs;													/* FatFs文件系统对象 */
 FRESULT res_flash;                /* 文件操作结果 */
 FIL fnew;													/* 文件对象 */
@@ -62,6 +65,7 @@ int main()
     printf("》文件系统挂载成功，可以进行读写测试\r\n");
   }	
 	
+	/*------------------- 文件系统测试：写测试 --------------------------*/
 	printf("\r\n****** 即将进行文件写入测试... ******\r\n");	
 	res_flash = f_open(&fnew, "0:新建文本文档abc.txt",FA_CREATE_ALWAYS | FA_WRITE);
 	if(res_flash == FR_OK )
@@ -92,7 +96,7 @@ int main()
   file_check();
 	
 	
-/*------------------- 文件系统测试：读测试 --------------------------*/
+  /*------------------- 文件系统测试：读测试 --------------------------*/
 	printf("****** 即将进行文件读取测试... ******\r\n");
 	res_flash = f_open(&fnew, "0:新建文本文档abc.txt",FA_OPEN_EXISTING | FA_READ); 	 
 	if(res_flash == FR_OK)
@@ -127,7 +131,7 @@ int main()
 	}
 }
 
-  FILINFO fno;
+
 static FRESULT file_check(void)
 {  
   /* 获取文件信息 */
