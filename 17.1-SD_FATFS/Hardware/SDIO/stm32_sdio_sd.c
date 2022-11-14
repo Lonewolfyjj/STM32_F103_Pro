@@ -264,6 +264,8 @@
   *         SDIO_APP_CMD should be sent before sending these commands. 
   */
 #define SDIO_SEND_IF_COND               ((uint32_t)0x00000008)
+																
+
 
 /* Private variables ---------------------------------------------------------*/
 static uint32_t CardType =  SDIO_STD_CAPACITY_SD_CARD_V1_1;	//存储卡的类型，先把它初始化为1.1协议的卡
@@ -478,9 +480,7 @@ SD_Error SD_Init(void)
 	/*重置SD_Error状态*/
   SD_Error errorstatus = SD_OK;
   
-	NVIC_Configuration();
-	
-
+  NVIC_Configuration();
 
   /* SDIO 外设底层引脚初始化 */
   GPIO_Configuration();
@@ -545,7 +545,7 @@ SD_Error SD_Init(void)
 
   if (errorstatus == SD_OK)
   {
-			/* 最后为了提高读写，开启4bits模式 */
+    /* 最后为了提高读写，开启4bits模式 */
     errorstatus = SD_EnableWideBusOperation(SDIO_BusWide_4b);
   }  
 

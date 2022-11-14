@@ -15,7 +15,7 @@ uint8_t Buffer_Tx[512] = "ABCDEFGHIGKLMNOPQRSTUVWXYZ", Buffer_Rx[512];
 #define NUMBER_OF_BLOCKS      32  /* For Multi Blocks operation (Read/Write) */
 #define MULTI_BUFFER_SIZE    (BLOCK_SIZE * NUMBER_OF_BLOCKS)
 
-
+extern SD_CardInfo SDCardInfo;
 SD_Error Stat = SD_OK;
 
 u8 *Block_Rx;
@@ -29,7 +29,7 @@ int main()
   key_init();
 	Stat = SD_Init();
 	printf("sd init = %d\r\n",Stat);
-	printf("sd size = %d MB\r\n",GetSDCardInfo().CardCapacity >>20); 
+	printf("sd size = %d MB\r\n",SDCardInfo.CardCapacity >>20); 
   SD_Test();
 	
   if(SD_WriteBlock(Buffer_Tx,0,512)==0)	//写入0扇区的内容

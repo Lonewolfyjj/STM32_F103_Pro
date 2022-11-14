@@ -346,5 +346,19 @@ SD_Error SD_ProcessIRQSrc(void);
 SD_Error SD_WaitReadOperation(void);
 SD_Error SD_WaitWriteOperation(void);
 
+SD_CardInfo GetSDCardInfo(void) ;
+
+
+
+
+
+u8 SD_ReadDisk(u8*buf,u32 sector,u8 cnt);
+
+u8 SD_WriteDisk(u8*buf,u32 sector,u8 cnt);
+
+
+
+
+
 #endif /* __STM32_SDIO_SD_H */
 

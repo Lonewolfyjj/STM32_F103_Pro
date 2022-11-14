@@ -99,6 +99,7 @@ void SD_EraseTest(void)
   
   if(EraseStatus == PASSED)
   {    
+
     printf("SD¿¨²Á³ý²âÊÔ³É¹¦£¡\n");
   }
   else
