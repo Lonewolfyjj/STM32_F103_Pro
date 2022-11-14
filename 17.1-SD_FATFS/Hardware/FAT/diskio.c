@@ -12,6 +12,7 @@
 #include "w25q128.h"
 #include "usart.h"
 #include "stm32_sdio_sd.h"
+#include <string.h>
 
 /* Definitions of physical drive number for each drive */
 //#define DEV_RAM		0	/* Example: Map Ramdisk to physical drive 0 */
@@ -21,7 +22,7 @@
 #define DEV_SDCARD 1
 
 #define FLASH_SECTOR_SIZE 4096
-#define SDCARD_SECTOR_SIZE 512
+#define SDCARD_BLOCK_SIZE 512
 
 extern SD_CardInfo SDCardInfo;
 
@@ -70,7 +71,6 @@ DSTATUS disk_status (
 }
 
 
-
 /*-----------------------------------------------------------------------*/
 /* Inidialize a Drive                                                    */
 /*-----------------------------------------------------------------------*/
@@ -96,12 +96,6 @@ DSTATUS disk_initialize (
       stat = disk_status(pdrv);
 	    printf("sd card init stat = %d\r\n",stat);
 	    return stat;
-//	case DEV_USB :
-//		result = USB_disk_initialize();
-
-//		// translate the reslut code here
-
-//		return stat;
 	}
 	return STA_NOINIT;
 }
@@ -131,7 +125,26 @@ DRESULT disk_read (
 
 	case DEV_SDCARD :
 
-    SD_State = SD_ReadMultiBlocks((BYTE *)buff, (uint64_t) sector * SDCARD_SECTOR_SIZE, SDCARD_SECTOR_SIZE, count);
+	  if((DWORD)buff & 3) 
+    {
+		    BYTE temp[SDCARD_BLOCK_SIZE];
+			  while(count--) 
+			  {
+            res = disk_read(pdrv, (BYTE *)temp, sector, 1);
+					  if (res != RES_OK) 
+            {
+				  		  printf("read mulity block failed! %d\n",res);
+					      break;
+					  }
+			   
+			      memcpy(buff, temp, SDCARD_BLOCK_SIZE);
+			      sector++;
+			      buff += SDCARD_BLOCK_SIZE;
+				}
+				return res;
+		}
+	
+    SD_State = SD_ReadMultiBlocks((BYTE *)buff, (uint64_t) sector * SDCARD_BLOCK_SIZE, SDCARD_BLOCK_SIZE, count);
 	  if (SD_State == SD_OK) 
     {
 		    /* Check if the Transfer is finished */
@@ -172,6 +185,7 @@ DRESULT disk_write (
 {
 	DRESULT res  = RES_PARERR;
   SD_Error SD_State = SD_OK;
+	
 	if (!count) {
 		return RES_PARERR;		/* Check parameter */
 	}
@@ -183,14 +197,33 @@ DRESULT disk_write (
 			W25Q128_Sector_Erase(sector * FLASH_SECTOR_SIZE);
 			W25Q128_Write((u8 *)buff,sector * FLASH_SECTOR_SIZE,count * FLASH_SECTOR_SIZE);
 			res = RES_OK;
-		return res;
+			return res;
 
-	case DEV_SDCARD :
+	  case DEV_SDCARD :
        
-      SD_State = SD_WriteMultiBlocks((BYTE *)buff, (uint64_t) sector * SDCARD_SECTOR_SIZE, SDCARD_SECTOR_SIZE, count);
-	    if (SD_State == SD_OK) 
+			if((DWORD)buff & 3) // 处理地址不对齐的情况
 			{
-					 /* Check if the Transfer is finished */
+					BYTE temp[SDCARD_BLOCK_SIZE]; // 创建4字对齐的temp数组
+				
+					while(count--) 
+			    {
+							memcpy(temp, buff, SDCARD_BLOCK_SIZE); // 把文件系统buff数组的内容拷贝到temp里
+							res = disk_write(pdrv, (BYTE *)temp, sector, 1); // 重新调用写函数多次写入
+						  if(res != RES_OK) 
+						  {
+								  printf("mulity sector write failed! %d\r\n",res);
+								  break;
+							}
+							sector++;
+							buff += SDCARD_BLOCK_SIZE;
+			    }
+					return res;
+			}	
+		
+			SD_State = SD_WriteMultiBlocks((BYTE *)buff, (uint64_t) sector * SDCARD_BLOCK_SIZE, SDCARD_BLOCK_SIZE, count);
+			if (SD_State == SD_OK) 
+			{
+					/* Check if the Transfer is finished */
 					SD_State = SD_WaitReadOperation();
 					while(SD_GetStatus() != SD_TRANSFER_OK);
 			} 
@@ -204,7 +237,7 @@ DRESULT disk_write (
 					res = RES_OK;
 			}
 
-		  return res;
+			return res;
 
 	}
 
@@ -253,7 +286,7 @@ DRESULT disk_ioctl (
         break;
         /* 扇区大小  */
         case GET_SECTOR_SIZE :
-          *(WORD * )buff = SDCARD_SECTOR_SIZE; //SD_SECTOR_SIZE
+          *(WORD * )buff = SDCARD_BLOCK_SIZE; //SDCARD_BLOCK_SIZE
         break;
         /* 同时擦除扇区个数 */
         case GET_BLOCK_SIZE :
