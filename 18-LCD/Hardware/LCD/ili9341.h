@@ -76,7 +76,7 @@
 #define 			ILI9341_MORE_PIXEL	320			//液晶屏较长方向的像素宽度
 #define             ILI9341_DispWindow_X_Star		    0     //起始点的X坐标
 #define             ILI9341_DispWindow_Y_Star		    0     //起始点的Y坐标
-#define    SIZE    16 // 字体大小128*128 // 汉字的长宽
+
 
 extern u16  LCD_X_LENGTH ;
 extern u16  LCD_Y_LENGTH ;
@@ -125,4 +125,5 @@ void LCD_SetBackColor(uint16_t Color);
 void LCD_SetTextColor(uint16_t Color);
 void LCD_GetColors(uint16_t *TextColor, uint16_t *BackColor);
 void ILI9341_Clear ( uint16_t usX, uint16_t usY, uint16_t usWidth, uint16_t usHeight );
+void ILI9341_DispString_EN_CH (uint16_t usX , uint16_t usY, char * pStr );
 #endif

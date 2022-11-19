@@ -12,7 +12,7 @@ static FRESULT res_sd;
 static UINT br;            					/* File R/W count */
 static BYTE ReadBuffer[1024]={0};
 //字库文件存储位置，fonts.h中的宏：
-#define GBKCODE_FILE_NAME			"1:/srcdata/GB2312_H1616.FON"
+#define GBKCODE_FILE_NAME			"1:/srcdata/GB2312_H3232.FON"
 
 /**
   * @brief  获取SD卡中文显示字库数据

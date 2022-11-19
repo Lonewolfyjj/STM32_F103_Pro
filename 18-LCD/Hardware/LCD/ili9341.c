@@ -5,7 +5,7 @@
 
 u16  LCD_X_LENGTH   =   ILI9341_LESS_PIXEL;
 u16  LCD_Y_LENGTH   =   ILI9341_MORE_PIXEL;
-static sFONT *LCD_Currentfonts = &Font8x16;  //英文字体
+static sFONT *LCD_Currentfonts = &Font24x32;  //英文字体
 
 static uint16_t CurrentTextColor   = WHITE;//前景色
 static uint16_t CurrentBackColor   = BLACK;//背景色
@@ -470,11 +470,11 @@ void setScanOrigation(u8 ucOption)
 void showHan( uint16_t usX, uint16_t usY,uint8_t *buff) 
 {
     uint8_t i,j,k;
-    openWindow ( usX, usY, SIZE-1, SIZE-1 );
+    openWindow ( usX, usY, WIDTH_CH_CHAR-1, HEIGHT_CH_CHAR-1 );
 	ILI9341_Write_Cmd(0x2C);
-    for(i=0;i<SIZE;i++)  
+    for(i=0; i < WIDTH_CH_CHAR; i++)  
     {
-        for(j = 0; j < SIZE/8; j++) 
+        for(j = 0; j < WIDTH_CH_CHAR/8; j++) 
         {
             for(k = 0; k < 8; k++) 
             {

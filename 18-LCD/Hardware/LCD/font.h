@@ -3,8 +3,8 @@
 #include "ili9341.h"
 
 
-#define      WIDTH_CH_CHAR		                16	    //中文字符宽度 
-#define      HEIGHT_CH_CHAR		              	16		  //中文字符高度 
+#define      WIDTH_CH_CHAR		                32	    //中文字符宽度 
+#define      HEIGHT_CH_CHAR		              	32		  //中文字符高度 
 
 typedef struct _tFont
 {    
