@@ -74,8 +74,30 @@
 
 #define 			ILI9341_LESS_PIXEL	240			//液晶屏较短方向的像素宽度
 #define 			ILI9341_MORE_PIXEL	320			//液晶屏较长方向的像素宽度
+#define             ILI9341_DispWindow_X_Star		    0     //起始点的X坐标
+#define             ILI9341_DispWindow_Y_Star		    0     //起始点的Y坐标
+#define    SIZE    16 // 字体大小128*128 // 汉字的长宽
 
-#define SIZE 128 // 字体大小128*128
+extern u16  LCD_X_LENGTH ;
+extern u16  LCD_Y_LENGTH ;
+
+#define      BACKGROUND		                BLACK   //默认背景颜色
+
+#define      WHITE		 		           0xFFFF	   //白色
+#define      BLACK                         0x0000	   //黑色 
+#define      GREY                          0xF7DE	   //灰色 
+#define      BLUE                          0x001F	   //蓝色 
+#define      BLUE2                         0x051F	   //浅蓝色 
+#define      RED                           0xF800	   //红色 
+#define      MAGENTA                       0xF81F	   //红紫色，洋红色 
+#define      GREEN                         0x07E0	   //绿色 
+#define      CYAN                          0x7FFF	   //蓝绿色，青色 
+#define      YELLOW                        0xFFE0	   //黄色 
+#define      BRED                          0xF81F
+#define      GRED                          0xFFE0
+#define      GBLUE                         0x07FF
+
+
 uint16_t ILI9341_Read_Data (void);
 void ILI9341_Write_Data ( uint16_t usData );
 void ILI9341_Write_Cmd ( uint16_t usCmd );
@@ -85,14 +107,22 @@ void Gpio_config(void);
 void init_lcd(void);
 void openWindow(uint16_t startX, uint16_t startY, uint16_t width, uint16_t height) ;
 void set9341Config(void);
+void ILI9341_BackLed_Control ( FunctionalState enumState );
 uint16_t ILI9341_ReadID(void);
 void ILI9341_DrawRectangle ( uint16_t usX_Start, uint16_t usY_Start, uint16_t usWidth, uint16_t usHeight, uint8_t ucFilled );
 void drawRect(uint16_t startX, uint16_t startY, uint16_t width, uint16_t height,u16 color) ;
 void setScanOrigation(u8 ucOption) ;
 void ILI9341_SetPointPixel ( uint16_t usX, uint16_t usY );
 void ILI9341_SetPointPixel1 ( uint16_t usX, uint16_t usY,uint16_t usColor )	;
-void showHan( uint16_t usX, uint16_t usY) ;
+void showHan( uint16_t usX, uint16_t usY,uint8_t *buff) ;
 void openWindow(uint16_t startX, uint16_t startY, uint16_t width, uint16_t height) ;
-
-
+void ILI9341_DispChar_CH ( uint16_t usX, uint16_t usY, uint16_t usChar );
+void ILI9341_DispString_CH (uint16_t usX , uint16_t usY, char * pStr );
+void ILI9341_DispChar_EN ( uint16_t usX, uint16_t usY, const char cChar );
+void ILI9341_DispString_EN ( 	uint16_t usX ,uint16_t usY,  char * pStr );
+void ILI9341_Clear ( uint16_t usX, uint16_t usY, uint16_t usWidth, uint16_t usHeight );
+void LCD_SetBackColor(uint16_t Color);
+void LCD_SetTextColor(uint16_t Color);
+void LCD_GetColors(uint16_t *TextColor, uint16_t *BackColor);
+void ILI9341_Clear ( uint16_t usX, uint16_t usY, uint16_t usWidth, uint16_t usHeight );
 #endif

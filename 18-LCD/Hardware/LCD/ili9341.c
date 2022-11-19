@@ -5,7 +5,28 @@
 
 u16  LCD_X_LENGTH   =   ILI9341_LESS_PIXEL;
 u16  LCD_Y_LENGTH   =   ILI9341_MORE_PIXEL;
+static sFONT *LCD_Currentfonts = &Font8x16;  //英文字体
 
+static uint16_t CurrentTextColor   = WHITE;//前景色
+static uint16_t CurrentBackColor   = BLACK;//背景色
+
+uint8_t * pBuffer;
+
+void init_lcd() 
+{
+
+	Gpio_config();
+	FSMC_config();
+    delay_ms(50);     
+    ILI9341_BackLed_Control(ENABLE);
+    ILI9341_ReadID();
+    set9341Config();
+    setScanOrigation(0);
+    LCD_SetBackColor(CurrentBackColor);
+    LCD_SetTextColor(CurrentTextColor);
+    //drawRect (0,0,64,64,0xffff);
+
+}
 
 void Gpio_config()
 {
@@ -193,20 +214,6 @@ void ILI9341_BackLed_Control ( FunctionalState enumState )
 	else
 		GPIO_ResetBits (LCD_BACKLIGHT_PORT, LCD_BACKLIGHT_PIN );
 		
-}
-
-
-void init_lcd() 
-{
-	Gpio_config();
-	FSMC_config();
-    delay_ms(50);     
-    ILI9341_BackLed_Control(ENABLE);
-    ILI9341_ReadID();
-    set9341Config();
-    setScanOrigation(0);
-   // drawRect (0,0,64,64,0xffff);
-    showHan(16,16);
 }
 
 
@@ -460,7 +467,7 @@ void setScanOrigation(u8 ucOption)
 	ILI9341_Write_Cmd ( CMD_SetPixel );		
 }
 
-void showHan( uint16_t usX, uint16_t usY) 
+void showHan( uint16_t usX, uint16_t usY,uint8_t *buff) 
 {
     uint8_t i,j,k;
     openWindow ( usX, usY, SIZE-1, SIZE-1 );
@@ -471,17 +478,18 @@ void showHan( uint16_t usX, uint16_t usY)
         {
             for(k = 0; k < 8; k++) 
             {
-                if((zi[(SIZE/8)*i+j] << k) & 0x80 )    
+                if((*buff << k) & 0x80 )    
                 {
                     printf("*");
-                    ILI9341_Write_Data(0XF100);
+                    ILI9341_Write_Data(CurrentTextColor);
                 } 
                 else 
                 {
                     printf(" ");
-                    ILI9341_Write_Data(0xFFFF);
+                    ILI9341_Write_Data(CurrentBackColor);
                 }  
             }
+            buff++;
         }
         printf("\r\n");
     }
@@ -514,7 +522,7 @@ void ILI9341_SetPointPixel ( uint16_t usX, uint16_t usY )
   {
 		ILI9341_SetCursor ( usX, usY );
 		
-		ILI9341_FillColor ( 1, 0xF800 );
+		ILI9341_FillColor ( 1, CurrentTextColor );
 	}
 	
 }
@@ -531,6 +539,202 @@ void ILI9341_SetPointPixel1 ( uint16_t usX, uint16_t usY,uint16_t usColor )
 	
 }
 
+
+void ILI9341_DispString_EN_CH (uint16_t usX , uint16_t usY, char * pStr )
+{
+	uint16_t usCh;
+	
+	while( * pStr != '\0' )
+	{
+		if ( * pStr <= 126 )  	//英文字符
+		{
+			if ( ( usX - ILI9341_DispWindow_X_Star + LCD_Currentfonts->Width ) > LCD_X_LENGTH )  // 累计坐标如果超过一行，则自动换行
+			{
+				usX = ILI9341_DispWindow_X_Star;
+				usY += LCD_Currentfonts->Height;
+			}
+			
+			if ( ( usY - ILI9341_DispWindow_Y_Star + LCD_Currentfonts->Height ) > LCD_Y_LENGTH )
+			{
+				usX = ILI9341_DispWindow_X_Star;
+				usY = ILI9341_DispWindow_Y_Star;
+			}
+		
+		    ILI9341_DispChar_EN ( usX, usY, * pStr );
+			
+			usX +=  LCD_Currentfonts->Width; // x坐标自动加一个字符的宽度
+		
+		    pStr ++; // 数据指针往后走一位
+
+		}
+		
+		else   //汉字字符
+		{
+			if (( usX - ILI9341_DispWindow_X_Star + WIDTH_CH_CHAR ) > LCD_X_LENGTH )
+			{
+				usX = ILI9341_DispWindow_X_Star;
+				usY += HEIGHT_CH_CHAR;
+			}
+			
+			if ( ( usY - ILI9341_DispWindow_Y_Star + HEIGHT_CH_CHAR ) > LCD_Y_LENGTH )
+			{
+				usX = ILI9341_DispWindow_X_Star;
+				usY = ILI9341_DispWindow_Y_Star;
+			}	
+			
+			usCh = * ( uint16_t * ) pStr;	
+			
+			usCh = ( usCh << 8 ) + ( usCh >> 8 );		
+
+			ILI9341_DispChar_CH ( usX, usY, usCh );
+			
+			usX += WIDTH_CH_CHAR;  // 坐标往后走一个字的宽度
+			
+			pStr += 2;           //一个汉字两个字节 
+        }
+		
+    }	
+}
+
+void ILI9341_DispChar_CH ( uint16_t usX, uint16_t usY, uint16_t usChar )
+{
+	//设置显示窗口
+	openWindow ( usX, usY, WIDTH_CH_CHAR, HEIGHT_CH_CHAR );
+	
+	ILI9341_Write_Cmd ( CMD_SetPixel );
+    
+    pBuffer = GetGBKCode_from_sd(pBuffer,usChar);
+    
+    showHan(usX,usY,pBuffer);
+}
+
+void ILI9341_DispString_CH (uint16_t usX , uint16_t usY, char * pStr )
+{	
+	uint16_t usCh;
+
+	while( *pStr != '\0' )
+	{		
+		if ( ( usX - ILI9341_DispWindow_X_Star + WIDTH_CH_CHAR ) > LCD_X_LENGTH )
+		{
+			usX = ILI9341_DispWindow_X_Star;
+			usY += HEIGHT_CH_CHAR;
+		}
+		
+		if ( ( usY - ILI9341_DispWindow_Y_Star + HEIGHT_CH_CHAR ) > LCD_Y_LENGTH )
+		{
+			usX = ILI9341_DispWindow_X_Star;
+			usY = ILI9341_DispWindow_Y_Star;
+		}	
+		
+		usCh = * ( uint16_t * ) pStr;	
+        usCh = ( usCh << 8 ) + ( usCh >> 8 );
+
+		ILI9341_DispChar_CH ( usX, usY, usCh );
+		
+		usX += WIDTH_CH_CHAR;
+		
+		pStr += 2;           //一个汉字两个字节 
+
+	}	   
+	
+}
+
+
+void ILI9341_DispChar_EN ( uint16_t usX, uint16_t usY, const char cChar )
+{
+	uint8_t  byteCount, bitCount,fontLength;	
+	uint16_t ucRelativePositon;
+	uint8_t *Pfont;
+	
+	//对ascii码表偏移（字模表不包含ASCII表的前32个非图形符号）
+	ucRelativePositon = cChar - ' ';
+	
+	//每个字模的字节数
+	fontLength = (LCD_Currentfonts->Width * LCD_Currentfonts->Height)/8;
+		
+	//字模首地址
+	/*ascii码表偏移值乘以每个字模的字节数，求出字模的偏移位置*/
+	Pfont = (uint8_t *)&LCD_Currentfonts->table[ucRelativePositon * fontLength];
+	
+	//设置显示窗口
+	openWindow ( usX, usY, LCD_Currentfonts->Width-1, LCD_Currentfonts->Height-1);
+	
+	ILI9341_Write_Cmd ( CMD_SetPixel );
+
+	//按字节读取字模数据
+	//由于前面直接设置了显示窗口，显示数据会自动换行
+	for ( byteCount = 0; byteCount < fontLength; byteCount++ )
+	{
+        //一位一位处理要显示的颜色
+        for ( bitCount = 0; bitCount < 8; bitCount++ )
+        {
+            if ( Pfont[byteCount] & (0x80>>bitCount) )
+                ILI9341_Write_Data ( CurrentTextColor );			
+            else
+                ILI9341_Write_Data ( CurrentBackColor );
+        }	
+	}	
+}
+
+void ILI9341_DispString_EN (uint16_t usX ,uint16_t usY,  char * pStr )
+{
+	while ( * pStr != '\0' )
+	{
+		if ( ( usX - ILI9341_DispWindow_X_Star + LCD_Currentfonts->Width ) > LCD_X_LENGTH )
+		{
+			usX = ILI9341_DispWindow_X_Star;
+			usY += LCD_Currentfonts->Height;
+		}
+		
+		if ( ( usY - ILI9341_DispWindow_Y_Star + LCD_Currentfonts->Height ) > LCD_Y_LENGTH )
+		{
+			usX = ILI9341_DispWindow_X_Star;
+			usY = ILI9341_DispWindow_Y_Star;
+		}
+		
+		ILI9341_DispChar_EN ( usX, usY, * pStr);
+		
+		pStr ++;
+		
+		usX += LCD_Currentfonts->Width;
+		
+	}
+	
+}
+
+void ILI9341_Clear ( uint16_t usX, uint16_t usY, uint16_t usWidth, uint16_t usHeight )
+{
+	openWindow ( usX, usY, usWidth, usHeight );
+
+	ILI9341_FillColor ( usWidth * usHeight, BACKGROUND);		
+	
+}
+
+void LCD_GetColors(uint16_t *TextColor, uint16_t *BackColor)
+{
+    *TextColor = CurrentTextColor;
+    *BackColor = CurrentBackColor;
+}
+
+/**
+  * @brief  设置LCD的前景(字体)颜色,RGB565
+  * @param  Color: 指定前景(字体)颜色 
+  * @retval None
+  */
+void LCD_SetTextColor(uint16_t Color)
+{
+  CurrentTextColor = Color;
+}
+
+/**
+  * @brief  设置LCD的背景颜色,RGB565
+  * @param  Color: 指定背景颜色 
+  * @retval None
+  */
+void LCD_SetBackColor(uint16_t Color)
+{
+  CurrentBackColor = Color;
+}
 
 
 
