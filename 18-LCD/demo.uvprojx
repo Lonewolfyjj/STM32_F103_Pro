@@ -336,7 +336,7 @@
               <MiscControls></MiscControls>
               <Define>USE_STDPERIPH_DRIVER,STM32F10X_HD</Define>
               <Undefine></Undefine>
-              <IncludePath>.\CMSIS;.\Lib\inc;.\Startup;.\User;.\System\delay;.\System\sys;.\System\usart;.\Hardware\LED;.\System\reg;.\Hardware\KEY;.\Hardware\LCD</IncludePath>
+              <IncludePath>.\CMSIS;.\Lib\inc;.\Startup;.\User;.\System\delay;.\System\sys;.\System\usart;.\Hardware\LED;.\System\reg;.\Hardware\KEY;.\Hardware\LCD;.\Hardware\FAT;.\Hardware\SDIO;.\Hardware\SPI;.\Hardware\W25Q128</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -574,6 +574,46 @@
               <FileName>ili9341.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Hardware\LCD\ili9341.c</FilePath>
+            </File>
+            <File>
+              <FileName>diskio.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Hardware\FAT\diskio.c</FilePath>
+            </File>
+            <File>
+              <FileName>ff.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Hardware\FAT\ff.c</FilePath>
+            </File>
+            <File>
+              <FileName>ffsystem.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Hardware\FAT\ffsystem.c</FilePath>
+            </File>
+            <File>
+              <FileName>ffunicode.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Hardware\FAT\ffunicode.c</FilePath>
+            </File>
+            <File>
+              <FileName>font.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Hardware\LCD\font.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32_sdio_sd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Hardware\SDIO\stm32_sdio_sd.c</FilePath>
+            </File>
+            <File>
+              <FileName>spi.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Hardware\SPI\spi.c</FilePath>
+            </File>
+            <File>
+              <FileName>w25q128.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Hardware\W25Q128\w25q128.c</FilePath>
             </File>
           </Files>
         </Group>
